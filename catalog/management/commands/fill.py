@@ -5,7 +5,7 @@ from catalog.models import Category, Product
 
 class Command(BaseCommand):
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **kwargs):
         Category.objects.all().delete()
         Product.objects.all().delete()
 
@@ -16,8 +16,10 @@ class Command(BaseCommand):
             for item in data:
                 if item["model"] == "catalog.product":
                     products.append(Product(**item))
+                    print(products)
                 else:
                     category.append(Category(**item))
+                    print(category)
 
         Product.objects.bulk_create(products)
         Category.objects.bulk_create(category)
