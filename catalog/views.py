@@ -10,6 +10,14 @@ def index(request):
     }
     return render(request, 'catalog/index.html', context)
 
+
+def prodinfo(request, pk):
+    context = {
+        'object_list': Product.objects.get(pk=pk)
+    }
+    return render(request, 'catalog/prod_info.html', context)
+
+
 def contacts(requests):
     if requests.method == 'POST':
         name = requests.POST.get('name')
