@@ -13,7 +13,7 @@ def index(request):
 
 def prodinfo(request, pk):
     context = {
-        'object_list': Product.objects.get(pk=pk)
+        'object': Product.objects.get(pk=pk)
     }
     return render(request, 'catalog/prod_info.html', context)
 
