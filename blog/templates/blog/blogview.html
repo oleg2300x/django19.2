@@ -1,0 +1,35 @@
+{% extends 'catalog/base.html' %}
+{% load my_tags %}
+{% load static %}
+{% block content %}
+<div class="col-12 mb-5">
+    <h1>{{ object.title}}</h1>
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+    <div class="col">
+        <div class="card shadow-sm">
+            <img class="card-img-top"
+                 src="/media/{{ object.image }}"
+                 alt="Изображение не найденно">
+
+            <div class="card-body">
+                <p class="card-text">
+                    <ul>
+                <li>{{ object.title }} ({{ object.slag }})</li>
+                <li>{{ object.date_of_creation }}</li>
+                <li>{{ object.content }}</li>
+            </ul>
+                </p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                        <a href="{% url 'blog:edit' object.pk %}" class="btn btn-sm btn-outline-secondary">Редактировать</a>
+                        <a href="{% url 'blog:delete' object.pk %}" class="btn btn-sm btn-outline-secondary">Удалить</a>
+                    </div>
+                    <div class="card-footer">
+                        Просмотры: {{ object.views_count }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
