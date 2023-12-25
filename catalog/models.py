@@ -1,5 +1,5 @@
 from django.db import models
-
+import datetime
 
 NULLABLE = {'blank': True, 'null': True}
 
@@ -21,8 +21,8 @@ class Product(models.Model):
     image = models.ImageField(upload_to='products/', verbose_name='Изображение', **NULLABLE)
     category = models.ForeignKey('Category', on_delete=models.PROTECT)
     price = models.IntegerField(verbose_name='Цена за покупку')
-    date_of_creation = models.DateTimeField(verbose_name='Дата создания')
-    last_modified_date = models.DateTimeField(verbose_name='Дата последнего изменения')
+    date_of_creation = models.DateTimeField(default=datetime.datetime.now(), verbose_name='Дата создания',)
+    last_modified_date = models.DateTimeField(verbose_name='Дата последнего изменения', **NULLABLE)
 
     def __str__(self):
         return f'{self.name} {self.description} {self.category} ' \
@@ -32,3 +32,17 @@ class Product(models.Model):
     class Meta:
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
+
+
+class Version(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
+    version_number = models.CharField(max_length=150, verbose_name='Номер версии', **NULLABLE)
+    version_name = models.CharField(max_length=150, verbose_name='Название версии')
+    is_active = models.BooleanField(verbose_name='В наличии', default=False)
+
+    def __str__(self):
+        return f'{self.product} --> ({self.version_number} - {self.version_name})'
+
+    class Meta:
+        verbose_name = 'Версия'
+        verbose_name_plural = 'Версии'
