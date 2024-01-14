@@ -13,16 +13,6 @@ class IndexListView(ListView):
     model = Product
     template_name = 'catalog/index.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(IndexListView, self).get_context_data(**kwargs)
-        for object in context['product_list']:
-            active_version = Version.objects.filter(product=object, is_active=True).last()
-            if active_version:
-                object.active_version_number = active_version.version_number
-                object.version_name = active_version.version_name
-            else:
-                object.active_version_number = None
-        return context
 
 
 class ProdDetailView(DetailView):
@@ -35,6 +25,13 @@ class ProdCreateView(CreateView):
     model = Product
     form_class = ProductForm
     success_url = reverse_lazy('catalog:index')
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.owner = self.request.user
+        self.object.save()
+
+        return super().form_valid(form)
 
 
 class ProdUpdateView(UpdateView):

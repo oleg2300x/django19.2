@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 import datetime
 
@@ -24,6 +25,8 @@ class Product(models.Model):
     date_of_creation = models.DateTimeField(default=datetime.datetime.now(), verbose_name='Дата создания',)
     last_modified_date = models.DateTimeField(verbose_name='Дата последнего изменения', **NULLABLE)
 
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, **NULLABLE, verbose_name='Владелец')
+
     def __str__(self):
         return f'{self.name} {self.description} {self.category} ' \
                f'{self.price} {self.date_of_creation} {self.last_modified_date}'
@@ -35,10 +38,10 @@ class Product(models.Model):
 
 
 class Version(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт', related_name='versions')
     version_number = models.CharField(max_length=150, verbose_name='Номер версии', **NULLABLE)
     version_name = models.CharField(max_length=150, verbose_name='Название версии')
-    is_active = models.BooleanField(verbose_name='В наличии', default=False)
+    is_active = models.BooleanField(verbose_name='В наличии', default=True)
 
     def __str__(self):
         return f'{self.product} --> ({self.version_number} - {self.version_name})'

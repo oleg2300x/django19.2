@@ -14,7 +14,7 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Product
         fields = '__all__'
-        exclude = ('last_modified_date', 'date_of_creation',)
+        exclude = ('last_modified_date', 'date_of_creation', 'owner',)
 
     def clean_description(self):
         cleaned_data = self.cleaned_data.get('description')
@@ -40,7 +40,8 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
 class VersionForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Version
-        fields = '__all__'
+        fields = ('version_number', 'version_name', 'is_active',)
+
 
     def clean_is_active(self):
 
