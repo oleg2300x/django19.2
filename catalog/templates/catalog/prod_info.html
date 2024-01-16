@@ -17,9 +17,10 @@
                     <li>Цена: {{ object.price }} р.</li>
                     <li>Дата создания: {{ object.date_of_creation }}</li>
                     <li>{% if object.last_modified_date %}
-                        Дата изменения: {{ object.last_modified_date }}
+                        Дата изменения: {{object.last_modified_date}}
                         {% endif %}
                     </li>
+                    <li>Опубликовано: {{ object.is_published }}</li>
                 </ul>
                 </p>
                 <div class="d-flex justify-content-between align-items-center">

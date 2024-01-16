@@ -1,11 +1,13 @@
 import datetime
 
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMixin
 from django.forms import inlineformset_factory
+from django.http import Http404
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-from catalog.forms import ProductForm, VersionForm
+from catalog.forms import ProductForm, VersionForm, MProductForm
 from catalog.models import Product, Version
 
 
@@ -14,14 +16,13 @@ class IndexListView(ListView):
     template_name = 'catalog/index.html'
 
 
-
 class ProdDetailView(DetailView):
     model = Product
     template_name = 'catalog/prod_info.html'
     context_object_name = 'product'
 
 
-class ProdCreateView(CreateView):
+class ProdCreateView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
     success_url = reverse_lazy('catalog:index')
@@ -34,10 +35,11 @@ class ProdCreateView(CreateView):
         return super().form_valid(form)
 
 
-class ProdUpdateView(UpdateView):
+class ProdUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
     success_url = reverse_lazy('catalog:index')
+    permission_required = 'catalog.change_product'
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -64,12 +66,25 @@ class ProdUpdateView(UpdateView):
         self.object = super().get_object(queryset)
         self.object.last_modified_date = datetime.datetime.now()
         self.object.save()
+
+        if (self.request.user != self.object.owner
+                and not self.request.user.is_superuser
+                and self.request.user.has_perm('catalog.product_published')):
+            raise Http404
         return self.object
 
+    def get_form_class(self):
+        if self.request.user.has_perm('catalog.product_published'):
+            return MProductForm
+        return Http404
 
-class ProdDeleteView(DeleteView):
+
+class ProdDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Product
     success_url = reverse_lazy('catalog:index')
+
+    def test_func(self):
+        return self.request.user.is_superuser
 
 
 def contacts(requests):
