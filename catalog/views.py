@@ -9,6 +9,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 
 from catalog.forms import ProductForm, VersionForm, MProductForm
 from catalog.models import Product, Version
+from catalog.services import get_categories_from_cache
 
 
 class IndexListView(ListView):
@@ -33,6 +34,9 @@ class ProdCreateView(LoginRequiredMixin, CreateView):
         self.object.save()
 
         return super().form_valid(form)
+
+    def get_queryset(self):
+        return get_categories_from_cache()
 
 
 class ProdUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
